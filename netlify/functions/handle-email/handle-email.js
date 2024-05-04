@@ -34,8 +34,9 @@
 // module.exports = { handler };
 
 
-const { Document, Packer, Paragraph, HeadingLevel } = require('docx');
+
 const nodemailer = require('nodemailer');
+const { Document, Packer, Paragraph, Table, TableCell, TableRow, WidthType, BorderStyle, HeadingLevel } = require('docx');
 
 const handler = async (event) => {
   if (event.httpMethod !== "POST") {
@@ -57,7 +58,6 @@ const handler = async (event) => {
   }
 };
 
-const { Document, Packer, Paragraph, Table, TableCell, TableRow, WidthType, BorderStyle, HeadingLevel } = require('docx');
 
 async function generateDocument(formData) {
     const doc = new Document({
