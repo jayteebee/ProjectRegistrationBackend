@@ -52,17 +52,16 @@ function createDetailsTable(data) {
       "Expected closure date:", "Existing customer or new customer?", "Next Action Point:"
   ];
 
-  // Define the widths for the label and value cells
-  const labelWidth = 4000; // Width in twips for labels (about 20% of the page width)
-  const valueWidth = 6000; // Width in twips for values (about 30% of the page width)
+  // Calculate the width of each column to be 33% of the full page width
+  const columnWidth = Math.round(12240 * 0.33);
 
   const tableRows = labels.map(label => {
-    const value = data[label] || "Not provided on Zoho.."; // Directly use the label to access data properties
+    const value = data[label] || "Not provided on Zoho..";
     return new TableRow({
         children: [
             new TableCell({
                 children: [new Paragraph(label)],
-                width: { size: labelWidth, type: WidthType.DXA },
+                width: { size: columnWidth, type: WidthType.DXA },
                 borders: {
                     top: { size: 1, style: BorderStyle.SINGLE },
                     bottom: { size: 1, style: BorderStyle.SINGLE },
@@ -72,7 +71,7 @@ function createDetailsTable(data) {
             }),
             new TableCell({
                 children: [new Paragraph(value)],
-                width: { size: valueWidth, type: WidthType.DXA },
+                width: { size: columnWidth, type: WidthType.DXA },
                 borders: {
                     top: { size: 1, style: BorderStyle.SINGLE },
                     bottom: { size: 1, style: BorderStyle.SINGLE },
@@ -84,12 +83,12 @@ function createDetailsTable(data) {
     });
 });
 
-
   return new Table({
       rows: tableRows,
-      width: { size: 10000, type: WidthType.DXA } // Set total table width, ensure the table spans properly
+      width: { size: 12240, type: WidthType.DXA } // Ensure the table spans the full page width
   });
 }
+
 
 
 
