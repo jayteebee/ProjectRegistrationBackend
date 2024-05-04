@@ -1,6 +1,5 @@
 const handler = async (event) => {
   if (event.httpMethod !== "POST") {
-    // Return a 405 Method Not Allowed response if the function is not called with a POST request
     return {
       statusCode: 405,
       body: "Method Not Allowed",
@@ -9,17 +8,26 @@ const handler = async (event) => {
   }
 
   try {
-    // Ensure event.body exists and is a string before attempting to parse it
     const data = event.body ? JSON.parse(event.body) : {};
-    console.log("Received data:", data);  // Log the parsed data to the console
+    console.log("Received data:", data);
 
     return {
       statusCode: 200,
       body: JSON.stringify({ data }),
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*", // Adjust according to your security requirements
+      }
     };
   } catch (error) {
     console.error("Error handling the request:", error);
-    return { statusCode: 500, body: `Error parsing JSON: ${error.toString()}` }
+    return {
+      statusCode: 500,
+      body: `Error parsing JSON: ${error.toString()}`,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }
   }
 }
 
