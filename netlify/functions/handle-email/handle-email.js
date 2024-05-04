@@ -86,8 +86,7 @@ function createDetailsTable(data) {
 
   return new Table({
       rows: tableRows,
-      width: { size: 10000, type: WidthType.DXA }, // Set total table width
-      layout: TableLayoutType.FIXED // Use fixed layout to ensure widths are respected
+      width: { size: 10000, type: WidthType.DXA } // Set total table width, ensure the table spans properly
   });
 }
 
