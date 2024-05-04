@@ -46,45 +46,51 @@ async function generateDocument(formData) {
 }
 
 function createDetailsTable(data) {
-    const labels = [
-        "Customer", "Application Details", "Summarise the Application", "Budget",
-        "Demonstration Date and what will you be demonstrating and why that model:",
-        "Expected closure date:", "Existing customer or new customer?", "Next Action Point:"
-    ];
+  const labels = [
+      "Customer", "Application Details", "Summarise the Application", "Budget",
+      "Demonstration Date and what will you be demonstrating and why that model:",
+      "Expected closure date:", "Existing customer or new customer?", "Next Action Point:"
+  ];
 
-    const tableRows = labels.map(label => {
-        const value = data[label.replace(/\s+/g, '')] || ""; // Remove spaces to match formData keys
-        return new TableRow({
-            children: [
-                new TableCell({
-                    children: [new Paragraph(label)],
-                    width: { size: 300, type: WidthType.PERCENTAGE },
-                    borders: {
-                        top: { size: 1, style: BorderStyle.SINGLE },
-                        bottom: { size: 1, style: BorderStyle.SINGLE },
-                        left: { size: 1, style: BorderStyle.SINGLE },
-                        right: { size: 1, style: BorderStyle.SINGLE }
-                    }
-                }),
-                new TableCell({
-                    children: [new Paragraph(value)],
-                    width: { size: 300, type: WidthType.PERCENTAGE },
-                    borders: {
-                        top: { size: 1, style: BorderStyle.SINGLE },
-                        bottom: { size: 1, style: BorderStyle.SINGLE },
-                        left: { size: 1, style: BorderStyle.SINGLE },
-                        right: { size: 1, style: BorderStyle.SINGLE }
-                    }
-                })
-            ]
-        });
-    });
+  // Define the widths for the label and value cells
+  const labelWidth = 4000; // Width in twips for labels (about 20% of the page width)
+  const valueWidth = 6000; // Width in twips for values (about 30% of the page width)
 
-    return new Table({
-        rows: tableRows,
-        width: { size: 300, type: WidthType.PERCENTAGE }
-    });
+  const tableRows = labels.map(label => {
+      const value = data[label.replace(/\s+/g, '')] || ""; // Remove spaces to match formData keys
+      return new TableRow({
+          children: [
+              new TableCell({
+                  children: [new Paragraph(label)],
+                  width: { size: labelWidth, type: WidthType.DXA }, // Use DXA for specifying width in twips
+                  borders: {
+                      top: { size: 1, style: BorderStyle.SINGLE },
+                      bottom: { size: 1, style: BorderStyle.SINGLE },
+                      left: { size: 1, style: BorderStyle.SINGLE },
+                      right: { size: 1, style: BorderStyle.SINGLE }
+                  }
+              }),
+              new TableCell({
+                  children: [new Paragraph(value)],
+                  width: { size: valueWidth, type: WidthType.DXA },
+                  borders: {
+                      top: { size: 1, style: BorderStyle.SINGLE },
+                      bottom: { size: 1, style: BorderStyle.SINGLE },
+                      left: { size: 1, style: BorderStyle.SINGLE },
+                      right: { size: 1, style: BorderStyle.SINGLE }
+                  }
+              })
+          ]
+      });
+  });
+
+  return new Table({
+      rows: tableRows,
+      width: { size: 10000, type: WidthType.DXA }, // Set total table width
+      layout: TableLayoutType.FIXED // Use fixed layout to ensure widths are respected
+  });
 }
+
 
 
 async function sendEmailWithAttachment(buffer, customerName) {
