@@ -58,7 +58,7 @@ function createDetailsTable(data) {
             children: [
                 new TableCell({
                     children: [new Paragraph(label)],
-                    width: { size: 50, type: WidthType.PERCENTAGE },
+                    width: { size: 300, type: WidthType.PERCENTAGE },
                     borders: {
                         top: { size: 1, style: BorderStyle.SINGLE },
                         bottom: { size: 1, style: BorderStyle.SINGLE },
@@ -68,7 +68,7 @@ function createDetailsTable(data) {
                 }),
                 new TableCell({
                     children: [new Paragraph(value)],
-                    width: { size: 50, type: WidthType.PERCENTAGE },
+                    width: { size: 300, type: WidthType.PERCENTAGE },
                     borders: {
                         top: { size: 1, style: BorderStyle.SINGLE },
                         bottom: { size: 1, style: BorderStyle.SINGLE },
@@ -82,7 +82,7 @@ function createDetailsTable(data) {
 
     return new Table({
         rows: tableRows,
-        width: { size: 100, type: WidthType.PERCENTAGE }
+        width: { size: 300, type: WidthType.PERCENTAGE }
     });
 }
 
