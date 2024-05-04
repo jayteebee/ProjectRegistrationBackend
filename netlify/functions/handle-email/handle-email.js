@@ -61,7 +61,7 @@ function createDetailsTable(data) {
         children: [
             new TableCell({
                 children: [new Paragraph(label)],
-                width: { size: columnWidth, type: WidthType.DXA },
+                width: { size: 5000, type: WidthType.DXA },
                 borders: {
                     top: { size: 1, style: BorderStyle.SINGLE },
                     bottom: { size: 1, style: BorderStyle.SINGLE },
@@ -71,7 +71,7 @@ function createDetailsTable(data) {
             }),
             new TableCell({
                 children: [new Paragraph(value)],
-                width: { size: columnWidth, type: WidthType.DXA },
+                width: { size: 5000, type: WidthType.DXA },
                 borders: {
                     top: { size: 1, style: BorderStyle.SINGLE },
                     bottom: { size: 1, style: BorderStyle.SINGLE },
