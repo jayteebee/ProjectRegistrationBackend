@@ -1,39 +1,3 @@
-// const handler = async (event) => {
-//   if (event.httpMethod !== "POST") {
-//     return {
-//       statusCode: 405,
-//       body: "Method Not Allowed",
-//       headers: { "Allow": "POST" }
-//     };
-//   }
-
-//   try {
-//     const data = event.body ? JSON.parse(event.body) : {};
-//     console.log("Received data:", data);
-
-//     return {
-//       statusCode: 200,
-//       body: JSON.stringify({ data }),
-//       headers: {
-//         "Content-Type": "application/json",
-//         "Access-Control-Allow-Origin": "*", // Adjust according to your security requirements
-//       }
-//     };
-//   } catch (error) {
-//     console.error("Error handling the request:", error);
-//     return {
-//       statusCode: 500,
-//       body: `Error parsing JSON: ${error.toString()}`,
-//       headers: {
-//         "Content-Type": "application/json"
-//       }
-//     }
-//   }
-// }
-
-// module.exports = { handler };
-
-
 const { Document, Packer, Paragraph, HeadingLevel } = require('docx');
 const nodemailer = require('nodemailer');
 
@@ -57,12 +21,15 @@ const handler = async (event) => {
   }
 };
 
+const { Document, Packer, Paragraph, Table, TableRow, TableCell, HeadingLevel, WidthType, BorderStyle } = require('docx');
+
 async function generateDocument(formData) {
     const doc = new Document({
         sections: [{
+            properties: {},
             children: [
                 new Paragraph({
-                    text: "Project Registration R&D Team North Team SSA",
+                    text: "Project Registration R&D Team North, Team SSA",
                     heading: HeadingLevel.TITLE,
                 }),
                 new Paragraph({
@@ -70,12 +37,7 @@ async function generateDocument(formData) {
                     heading: HeadingLevel.HEADING_1,
                 }),
                 new Paragraph({ text: "", spaceAfter: 200 }),
-                ...Object.entries(formData).map(([key, value]) => 
-                    new Paragraph({
-                        text: `${key}: ${value}`,
-                        spacing: { after: 120 },
-                    })
-                ),
+                createDetailsTable(formData),
             ],
         }],
     });
@@ -83,6 +45,48 @@ async function generateDocument(formData) {
     const buffer = await Packer.toBuffer(doc);
     return buffer;
 }
+
+function createDetailsTable(data) {
+    const labels = [
+        "Customer", "Application Details", "Summarise the Application", "Budget",
+        "Demonstration Date and what will you be demonstrating and why that model:",
+        "Expected closure date:", "Existing customer or new customer?", "Next Action Point:"
+    ];
+
+    const tableRows = labels.map(label => {
+        const value = data[label.replace(/\s+/g, '')] || ""; // Remove spaces to match formData keys
+        return new TableRow({
+            children: [
+                new TableCell({
+                    children: [new Paragraph(label)],
+                    width: { size: 50, type: WidthType.PERCENTAGE },
+                    borders: {
+                        top: { size: 1, style: BorderStyle.SINGLE },
+                        bottom: { size: 1, style: BorderStyle.SINGLE },
+                        left: { size: 1, style: BorderStyle.SINGLE },
+                        right: { size: 1, style: BorderStyle.SINGLE }
+                    }
+                }),
+                new TableCell({
+                    children: [new Paragraph(value)],
+                    width: { size: 50, type: WidthType.PERCENTAGE },
+                    borders: {
+                        top: { size: 1, style: BorderStyle.SINGLE },
+                        bottom: { size: 1, style: BorderStyle.SINGLE },
+                        left: { size: 1, style: BorderStyle.SINGLE },
+                        right: { size: 1, style: BorderStyle.SINGLE }
+                    }
+                })
+            ]
+        });
+    });
+
+    return new Table({
+        rows: tableRows,
+        width: { size: 100, type: WidthType.PERCENTAGE }
+    });
+}
+
 
 async function sendEmailWithAttachment(buffer, customerName) {
     let transporter = nodemailer.createTransport({
