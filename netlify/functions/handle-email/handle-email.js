@@ -1,5 +1,6 @@
 const { Document, Packer, Paragraph, Table, TableRow, TableCell, HeadingLevel, WidthType, BorderStyle } = require('docx');
 const nodemailer = require('nodemailer');
+const dotenv = require('dotenv');
 
 const handler = async (event) => {
   if (event.httpMethod !== "POST") {
@@ -61,7 +62,7 @@ function createDetailsTable(data) {
         children: [
             new TableCell({
                 children: [new Paragraph(label)],
-                width: { size: 5000, type: WidthType.DXA },
+                width: { size: columnWidth, type: WidthType.DXA },
                 borders: {
                     top: { size: 1, style: BorderStyle.SINGLE },
                     bottom: { size: 1, style: BorderStyle.SINGLE },
@@ -71,7 +72,7 @@ function createDetailsTable(data) {
             }),
             new TableCell({
                 children: [new Paragraph(value)],
-                width: { size: 5000, type: WidthType.DXA },
+                width: { size: columnWidth, type: WidthType.DXA },
                 borders: {
                     top: { size: 1, style: BorderStyle.SINGLE },
                     bottom: { size: 1, style: BorderStyle.SINGLE },
@@ -97,14 +98,14 @@ async function sendEmailWithAttachment(buffer, customerName) {
     let transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: "jethro@thermalvisionresearch.co.uk",
-            pass: "ThermalVR2k4",
+            user: process.env.EMAIL,
+            pass: process.env.PASS,
         },
     });
 
     let mailOptions = {
-        from: "jethro@thermalvisionresearch.co.uk",
-        to: "jethro@thermalvisionresearch.co.uk",
+        from: process.env.EMAIL,
+        to: process.env.EMAIL,
         subject: 'New Project Registration Submission',
         text: `Hi Krystle,
         
