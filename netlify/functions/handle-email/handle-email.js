@@ -57,25 +57,106 @@ const handler = async (event) => {
   }
 };
 
+const { Document, Packer, Paragraph, Table, TableCell, TableRow, WidthType, BorderStyle, HeadingLevel } = require('docx');
+
 async function generateDocument(formData) {
     const doc = new Document({
         sections: [{
+            properties: {},
             children: [
                 new Paragraph({
-                    text: "Project Registration R&D Team North Team SSA",
+                    text: "Project Registration R&D Team North, Team SSA",
                     heading: HeadingLevel.TITLE,
                 }),
                 new Paragraph({
                     text: "Teledyne FLIR Sales Manager: Krystle Temmerman",
                     heading: HeadingLevel.HEADING_1,
                 }),
-                new Paragraph({ text: "", spaceAfter: 200 }),
-                ...Object.entries(formData).map(([key, value]) => 
-                    new Paragraph({
-                        text: `${key}: ${value}`,
-                        spacing: { after: 120 },
-                    })
-                ),
+                new Paragraph({
+                    text: "",
+                    spaceAfter: 200,
+                }),
+                new Table({
+                    rows: [
+
+                        new TableRow({
+                            children: [
+                                new TableCell({
+                                    children: [new Paragraph("Customer:")],
+                                    borders: {
+                                        top: { size: 1, style: BorderStyle.SINGLE },
+                                        bottom: { size: 1, style: BorderStyle.SINGLE },
+                                        left: { size: 1, style: BorderStyle.SINGLE },
+                                        right: { size: 1, style: BorderStyle.SINGLE },
+                                    },
+                                }),
+                                new TableCell({
+                                    children: [new Paragraph(formData.Customer || "")],
+                                    borders: {
+                                        top: { size: 1, style: BorderStyle.SINGLE },
+                                        bottom: { size: 1, style: BorderStyle.SINGLE },
+                                        left: { size: 1, style: BorderStyle.SINGLE },
+                                        right: { size: 1, style: BorderStyle.SINGLE },
+                                    },
+                                }),
+                            ],
+                        }),
+
+                        // Repeat the TableRow structure for each data field you want to display
+                        new TableRow({
+                            children: [
+                                new TableCell({
+                                    children: [new Paragraph("Application Details:")],
+                                    borders: {
+                                        top: { size: 1, style: BorderStyle.SINGLE },
+                                        bottom: { size: 1, style: BorderStyle.SINGLE },
+                                        left: { size: 1, style: BorderStyle.SINGLE },
+                                        right: { size: 1, style: BorderStyle.SINGLE },
+                                    },
+                                }),
+                                new TableCell({
+                                    children: [new Paragraph(formData['Application Details'] || "")],
+                                    borders: {
+                                        top: { size: 1, style: BorderStyle.SINGLE },
+                                        bottom: { size: 1, style: BorderStyle.SINGLE },
+                                        left: { size: 1, style: BorderStyle.SINGLE },
+                                        right: { size: 1, style: BorderStyle.SINGLE },
+                                    },
+                                }),
+                            ],
+                        }),
+
+                        new TableRow({
+                          children: [
+                              new TableCell({
+                                  children: [new Paragraph("Summarise The Application:")],
+                                  borders: {
+                                      top: { size: 1, style: BorderStyle.SINGLE },
+                                      bottom: { size: 1, style: BorderStyle.SINGLE },
+                                      left: { size: 1, style: BorderStyle.SINGLE },
+                                      right: { size: 1, style: BorderStyle.SINGLE },
+                                  },
+                              }),
+                              new TableCell({
+                                  children: [new Paragraph(formData['Summarise The Application'] || "")],
+                                  borders: {
+                                      top: { size: 1, style: BorderStyle.SINGLE },
+                                      bottom: { size: 1, style: BorderStyle.SINGLE },
+                                      left: { size: 1, style: BorderStyle.SINGLE },
+                                      right: { size: 1, style: BorderStyle.SINGLE },
+                                  },
+                              }),
+                          ],
+                      }),
+
+
+                        // Add more TableRow entries for other fields like Budget, Expected Closure Date, etc.
+                    ],
+                    width: {
+                        size: 100,
+                        type: WidthType.PERCENTAGE,
+                    },
+                }),
             ],
         }],
     });
@@ -83,6 +164,7 @@ async function generateDocument(formData) {
     const buffer = await Packer.toBuffer(doc);
     return buffer;
 }
+
 
 async function sendEmailWithAttachment(buffer, customerName) {
     let transporter = nodemailer.createTransport({
@@ -97,7 +179,9 @@ async function sendEmailWithAttachment(buffer, customerName) {
         from: "jethro@thermalvisionresearch.co.uk",
         to: "jethro@thermalvisionresearch.co.uk",
         subject: 'New Project Registration Submission',
-        text: 'Please find attached the submission details.',
+        text: `Hi Krystle,
+        
+        See Attached:`,
         attachments: [{
             filename: `Registration - ${customerName || "Unnamed Customer"}.docx`,
             content: buffer,
