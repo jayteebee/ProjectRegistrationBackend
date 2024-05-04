@@ -11,7 +11,7 @@ const handler = async (event) => {
   try {
     // Ensure event.body exists and is a string before attempting to parse it
     const data = event.body ? JSON.parse(event.body) : {};
-    const subject = data.name || 'World';  // Make sure to define 'subject' if you're using it in the response
+    const subject = data  // Make sure to define 'subject' if you're using it in the response
 
     return {
       statusCode: 200,
