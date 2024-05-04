@@ -36,7 +36,7 @@
 
 
 const nodemailer = require('nodemailer');
-const { Document, Packer, Paragraph, Table, TableCell, TableRow, WidthType, BorderStyle, HeadingLevel } = require('docx');
+const { Document, Packer, Paragraph, Table, TableRow, TableCell, WidthType, BorderStyle, HeadingLevel, TextRun } = require('docx');
 
 const handler = async (event) => {
   if (event.httpMethod !== "POST") {
@@ -60,109 +60,60 @@ const handler = async (event) => {
 
 
 async function generateDocument(formData) {
-    const doc = new Document({
-        sections: [{
-            properties: {},
-            children: [
-                new Paragraph({
-                    text: "Project Registration R&D Team North, Team SSA",
-                    heading: HeadingLevel.TITLE,
-                }),
-                new Paragraph({
-                    text: "Teledyne FLIR Sales Manager: Krystle Temmerman",
-                    heading: HeadingLevel.HEADING_1,
-                }),
-                new Paragraph({
-                    text: "",
-                    spaceAfter: 200,
-                }),
-                new Table({
-                    rows: [
+  const doc = new Document();
+  const tableRows = Object.entries(formData).map(([key, value]) => {
+      return new TableRow({
+          children: [
+              new TableCell({
+                  children: [new Paragraph({
+                      children: [new TextRun({ text: key + ":", bold: true })],
+                      spacing: { after: 100 },
+                  })],
+                  margins: { top: 100, bottom: 100, left: 100, right: 100 },
+                  borders: {
+                      top: { size: 1, style: BorderStyle.SINGLE },
+                      left: { size: 1, style: BorderStyle.SINGLE },
+                      right: { size: 1, style: BorderStyle.SINGLE },
+                      bottom: { size: 1, style: BorderStyle.SINGLE },
+                  },
+              }),
+              new TableCell({
+                  children: [new Paragraph(value)],
+                  margins: { top: 100, bottom: 100, left: 100, right: 100 },
+                  borders: {
+                      top: { size: 1, style: BorderStyle.SINGLE },
+                      left: { size: 1, style: BorderStyle.SINGLE },
+                      right: { size: 1, style: BorderStyle.SINGLE },
+                      bottom: { size: 1, style: BorderStyle.SINGLE },
+                  },
+              })
+          ]
+      });
+  });
 
-                        new TableRow({
-                            children: [
-                                new TableCell({
-                                    children: [new Paragraph("Customer:")],
-                                    borders: {
-                                        top: { size: 1, style: BorderStyle.SINGLE },
-                                        bottom: { size: 1, style: BorderStyle.SINGLE },
-                                        left: { size: 1, style: BorderStyle.SINGLE },
-                                        right: { size: 1, style: BorderStyle.SINGLE },
-                                    },
-                                }),
-                                new TableCell({
-                                    children: [new Paragraph(formData.Customer || "")],
-                                    borders: {
-                                        top: { size: 1, style: BorderStyle.SINGLE },
-                                        bottom: { size: 1, style: BorderStyle.SINGLE },
-                                        left: { size: 1, style: BorderStyle.SINGLE },
-                                        right: { size: 1, style: BorderStyle.SINGLE },
-                                    },
-                                }),
-                            ],
-                        }),
+  doc.addSection({
+      properties: {},
+      children: [
+          new Paragraph({
+              text: "Project Registration R&D Team North, Team SSA",
+              heading: HeadingLevel.TITLE
+          }),
+          new Paragraph({
+              text: "Teledyne FLIR Sales Manager: Krystle Temmerman",
+              heading: HeadingLevel.HEADING_1,
+              spacing: { after: 300 },
+          }),
+          new Table({
+              rows: tableRows,
+              width: {
+                  size: 100,
+                  type: WidthType.PERCENTAGE,
+              },
+          })
+      ],
+  });
 
-                        // Repeat the TableRow structure for each data field you want to display
-                        new TableRow({
-                            children: [
-                                new TableCell({
-                                    children: [new Paragraph("Application Details:")],
-                                    borders: {
-                                        top: { size: 1, style: BorderStyle.SINGLE },
-                                        bottom: { size: 1, style: BorderStyle.SINGLE },
-                                        left: { size: 1, style: BorderStyle.SINGLE },
-                                        right: { size: 1, style: BorderStyle.SINGLE },
-                                    },
-                                }),
-                                new TableCell({
-                                    children: [new Paragraph(formData['Application Details'] || "")],
-                                    borders: {
-                                        top: { size: 1, style: BorderStyle.SINGLE },
-                                        bottom: { size: 1, style: BorderStyle.SINGLE },
-                                        left: { size: 1, style: BorderStyle.SINGLE },
-                                        right: { size: 1, style: BorderStyle.SINGLE },
-                                    },
-                                }),
-                            ],
-                        }),
-
-                        new TableRow({
-                          children: [
-                              new TableCell({
-                                  children: [new Paragraph("Summarise The Application:")],
-                                  borders: {
-                                      top: { size: 1, style: BorderStyle.SINGLE },
-                                      bottom: { size: 1, style: BorderStyle.SINGLE },
-                                      left: { size: 1, style: BorderStyle.SINGLE },
-                                      right: { size: 1, style: BorderStyle.SINGLE },
-                                  },
-                              }),
-                              new TableCell({
-                                  children: [new Paragraph(formData['Summarise The Application'] || "")],
-                                  borders: {
-                                      top: { size: 1, style: BorderStyle.SINGLE },
-                                      bottom: { size: 1, style: BorderStyle.SINGLE },
-                                      left: { size: 1, style: BorderStyle.SINGLE },
-                                      right: { size: 1, style: BorderStyle.SINGLE },
-                                  },
-                              }),
-                          ],
-                      }),
-
-
-                        // Add more TableRow entries for other fields like Budget, Expected Closure Date, etc.
-                    ],
-                    width: {
-                        size: 100,
-                        type: WidthType.PERCENTAGE,
-                    },
-                }),
-            ],
-        }],
-    });
-
-    const buffer = await Packer.toBuffer(doc);
-    return buffer;
+  return await Packer.toBuffer(doc);
 }
 
 
