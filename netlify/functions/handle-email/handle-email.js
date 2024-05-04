@@ -53,7 +53,7 @@ function createDetailsTable(data) {
   ];
 
   // Calculate the width of each column to be 33% of the full page width
-  const columnWidth = Math.round(12240 * 0.33);
+  const columnWidth = Math.round(11500 * 0.33); // About 33% of the usable page width
 
   const tableRows = labels.map(label => {
     const value = data[label] || "Not provided on Zoho..";
@@ -85,7 +85,7 @@ function createDetailsTable(data) {
 
   return new Table({
       rows: tableRows,
-      width: { size: 12240, type: WidthType.DXA } // Ensure the table spans the full page width
+      width: { size: 11500, type: WidthType.DXA } // Ensure the table spans the full page width
   });
 }
 
