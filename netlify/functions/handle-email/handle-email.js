@@ -10,8 +10,8 @@ const handler = async (event) => {
 
   try {
     // Parse the JSON body from the request
-    const data = JSON.parse(event.body);
-    const subject = data.name || 'World';
+    const data = JSON.parse(event);
+    console.log(data);
 
     return {
       statusCode: 200,
