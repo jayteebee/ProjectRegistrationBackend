@@ -47,7 +47,7 @@ async function generateDocument(formData) {
 
 function createDetailsTable(data) {
   const labels = [
-      "Customer", "Application Details", "Summarise the Application", "Budget",
+      "Customer", "Application Details", "Summarise The Application", "Budget",
       "Demonstration Date and what will you be demonstrating and why that model:",
       "Expected closure date:", "Existing customer or new customer?", "Next Action Point:"
   ];
@@ -57,7 +57,7 @@ function createDetailsTable(data) {
   const valueWidth = 6000; // Width in twips for values (about 30% of the page width)
 
   const tableRows = labels.map(label => {
-    const value = data[label] || ""; // Directly use the label to access data properties
+    const value = data[label] || "Not provided on Zoho.."; // Directly use the label to access data properties
     return new TableRow({
         children: [
             new TableCell({
