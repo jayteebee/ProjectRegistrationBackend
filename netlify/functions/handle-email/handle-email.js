@@ -34,9 +34,8 @@
 // module.exports = { handler };
 
 
-
+const { Document, Packer, Paragraph, HeadingLevel } = require('docx');
 const nodemailer = require('nodemailer');
-const { Document, Packer, Paragraph, Table, TableRow, TableCell, WidthType, BorderStyle, HeadingLevel, TextRun } = require('docx');
 
 const handler = async (event) => {
   if (event.httpMethod !== "POST") {
@@ -58,64 +57,32 @@ const handler = async (event) => {
   }
 };
 
-
 async function generateDocument(formData) {
-  const doc = new Document();
-  const tableRows = Object.entries(formData).map(([key, value]) => {
-      return new TableRow({
-          children: [
-              new TableCell({
-                  children: [new Paragraph({
-                      children: [new TextRun({ text: key + ":", bold: true })],
-                      spacing: { after: 100 },
-                  })],
-                  margins: { top: 100, bottom: 100, left: 100, right: 100 },
-                  borders: {
-                      top: { size: 1, style: BorderStyle.SINGLE },
-                      left: { size: 1, style: BorderStyle.SINGLE },
-                      right: { size: 1, style: BorderStyle.SINGLE },
-                      bottom: { size: 1, style: BorderStyle.SINGLE },
-                  },
-              }),
-              new TableCell({
-                  children: [new Paragraph(value)],
-                  margins: { top: 100, bottom: 100, left: 100, right: 100 },
-                  borders: {
-                      top: { size: 1, style: BorderStyle.SINGLE },
-                      left: { size: 1, style: BorderStyle.SINGLE },
-                      right: { size: 1, style: BorderStyle.SINGLE },
-                      bottom: { size: 1, style: BorderStyle.SINGLE },
-                  },
-              })
-          ]
-      });
-  });
+    const doc = new Document({
+        sections: [{
+            children: [
+                new Paragraph({
+                    text: "Project Registration R&D Team North Team SSA",
+                    heading: HeadingLevel.TITLE,
+                }),
+                new Paragraph({
+                    text: "Teledyne FLIR Sales Manager: Krystle Temmerman",
+                    heading: HeadingLevel.HEADING_1,
+                }),
+                new Paragraph({ text: "", spaceAfter: 200 }),
+                ...Object.entries(formData).map(([key, value]) => 
+                    new Paragraph({
+                        text: `${key}: ${value}`,
+                        spacing: { after: 120 },
+                    })
+                ),
+            ],
+        }],
+    });
 
-  doc.addSection({
-      properties: {},
-      children: [
-          new Paragraph({
-              text: "Project Registration R&D Team North, Team SSA",
-              heading: HeadingLevel.TITLE
-          }),
-          new Paragraph({
-              text: "Teledyne FLIR Sales Manager: Krystle Temmerman",
-              heading: HeadingLevel.HEADING_1,
-              spacing: { after: 300 },
-          }),
-          new Table({
-              rows: tableRows,
-              width: {
-                  size: 100,
-                  type: WidthType.PERCENTAGE,
-              },
-          })
-      ],
-  });
-
-  return await Packer.toBuffer(doc);
+    const buffer = await Packer.toBuffer(doc);
+    return buffer;
 }
-
 
 async function sendEmailWithAttachment(buffer, customerName) {
     let transporter = nodemailer.createTransport({
