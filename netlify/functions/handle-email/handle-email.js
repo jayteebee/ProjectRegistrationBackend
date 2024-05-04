@@ -1,4 +1,4 @@
-const { Document, Packer, Paragraph, Table, TableRow, TableCell, HeadingLevel, WidthType, BorderStyle } = require('docx');
+const { Document, Packer, Paragraph, HeadingLevel } = require('docx');
 const nodemailer = require('nodemailer');
 
 const handler = async (event) => {
@@ -21,14 +21,12 @@ const handler = async (event) => {
   }
 };
 
-
 async function generateDocument(formData) {
     const doc = new Document({
         sections: [{
-            properties: {},
             children: [
                 new Paragraph({
-                    text: "Project Registration R&D Team North, Team SSA",
+                    text: "Project Registration R&D Team North Team SSA",
                     heading: HeadingLevel.TITLE,
                 }),
                 new Paragraph({
@@ -36,7 +34,12 @@ async function generateDocument(formData) {
                     heading: HeadingLevel.HEADING_1,
                 }),
                 new Paragraph({ text: "", spaceAfter: 200 }),
-                createDetailsTable(formData),
+                ...Object.entries(formData).map(([key, value]) => 
+                    new Paragraph({
+                        text: `${key}: ${value}`,
+                        spacing: { after: 120 },
+                    })
+                ),
             ],
         }],
     });
@@ -44,53 +47,6 @@ async function generateDocument(formData) {
     const buffer = await Packer.toBuffer(doc);
     return buffer;
 }
-
-function createDetailsTable(data) {
-  const labels = [
-      "Customer", "Application Details", "Summarise the Application", "Budget",
-      "Demonstration Date and what will you be demonstrating and why that model:",
-      "Expected closure date:", "Existing customer or new customer?", "Next Action Point:"
-  ];
-
-  // Define the widths for the label and value cells
-  const labelWidth = 4000; // Width in twips for labels (about 20% of the page width)
-  const valueWidth = 6000; // Width in twips for values (about 30% of the page width)
-
-  const tableRows = labels.map(label => {
-      const value = data[label.replace(/\s+/g, '')] || ""; // Remove spaces to match formData keys
-      return new TableRow({
-          children: [
-              new TableCell({
-                  children: [new Paragraph(label)],
-                  width: { size: labelWidth, type: WidthType.DXA }, // Use DXA for specifying width in twips
-                  borders: {
-                      top: { size: 1, style: BorderStyle.SINGLE },
-                      bottom: { size: 1, style: BorderStyle.SINGLE },
-                      left: { size: 1, style: BorderStyle.SINGLE },
-                      right: { size: 1, style: BorderStyle.SINGLE }
-                  }
-              }),
-              new TableCell({
-                  children: [new Paragraph(value)],
-                  width: { size: valueWidth, type: WidthType.DXA },
-                  borders: {
-                      top: { size: 1, style: BorderStyle.SINGLE },
-                      bottom: { size: 1, style: BorderStyle.SINGLE },
-                      left: { size: 1, style: BorderStyle.SINGLE },
-                      right: { size: 1, style: BorderStyle.SINGLE }
-                  }
-              })
-          ]
-      });
-  });
-
-  return new Table({
-      rows: tableRows,
-      width: { size: 10000, type: WidthType.DXA } // Set total table width, ensure the table spans properly
-  });
-}
-
-
 
 async function sendEmailWithAttachment(buffer, customerName) {
     let transporter = nodemailer.createTransport({
