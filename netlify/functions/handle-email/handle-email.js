@@ -1,6 +1,7 @@
 const { Document, Packer, Paragraph, Table, TableRow, TableCell, HeadingLevel, WidthType, BorderStyle } = require('docx');
 const nodemailer = require('nodemailer');
 const dotenv = require('dotenv');
+dotenv.config();
 
 const handler = async (event) => {
   if (event.httpMethod !== "POST") {
