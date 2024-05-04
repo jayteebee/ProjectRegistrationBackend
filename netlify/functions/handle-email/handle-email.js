@@ -11,13 +11,14 @@ const handler = async (event) => {
   try {
     // Ensure event.body exists and is a string before attempting to parse it
     const data = event.body ? JSON.parse(event.body) : {};
-    const subject = data  // Make sure to define 'subject' if you're using it in the response
+    console.log("Received data:", data);  // Log the parsed data to the console
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ message: `Hello ${subject}` }),
+      body: JSON.stringify({ data }),
     };
   } catch (error) {
+    console.error("Error handling the request:", error);
     return { statusCode: 500, body: `Error parsing JSON: ${error.toString()}` }
   }
 }
