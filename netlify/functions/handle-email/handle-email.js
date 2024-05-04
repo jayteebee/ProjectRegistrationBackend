@@ -1,4 +1,4 @@
-const { Document, Packer, Paragraph, HeadingLevel } = require('docx');
+const { Document, Packer, Paragraph, Table, TableRow, TableCell, HeadingLevel, WidthType, BorderStyle } = require('docx');
 const nodemailer = require('nodemailer');
 
 const handler = async (event) => {
@@ -21,7 +21,6 @@ const handler = async (event) => {
   }
 };
 
-const { Document, Packer, Paragraph, Table, TableRow, TableCell, HeadingLevel, WidthType, BorderStyle } = require('docx');
 
 async function generateDocument(formData) {
     const doc = new Document({
