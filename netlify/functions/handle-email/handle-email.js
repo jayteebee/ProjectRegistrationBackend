@@ -107,7 +107,7 @@ async function sendEmailWithAttachment(buffer, customerName) {
     let mailOptions = {
         from: process.env.EMAIL,
         to: process.env.EMAIL,
-        subject: 'New Project Registration Submission',
+        subject: `Project Registration: ${customerName} `,
         text: `Hi Krystle,
         
         See Attached:`,
